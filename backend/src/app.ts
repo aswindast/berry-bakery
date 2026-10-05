@@ -15,7 +15,16 @@ import highlightRoutes from './routes/highlight.routes.js'
 
 const app = express()
 
-app.use(cors({ origin: env.frontendUrl }))
+const allowedOrigins = new Set([
+	env.frontendUrl.replace(/\/$/, ''),
+	'https://berry-bakery-nrq1.vercel.app',
+])
+
+app.use(cors({
+	origin: (origin, callback) => {
+		callback(null, !origin || allowedOrigins.has(origin))
+	},
+}))
 app.use(express.json({ limit: '1mb' }))
 app.use('/api/health', healthRoutes)
 app.use('/api/products', productRoutes)
